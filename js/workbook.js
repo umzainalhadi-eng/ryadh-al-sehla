@@ -33,6 +33,9 @@ class WorkbookLearningLab {
         window.WORKBOOK_LESSONS.forEach(lesson => {
             const card = document.createElement('article');
             card.className = 'portal-card';
+            const page = document.createElement('span');
+            page.className = 'meta-tag';
+            page.textContent = `📖 صفحة ${lesson.page || '—'} في الكراسة`;
             const icon = document.createElement('div');
             icon.className = 'portal-icon-box';
             icon.textContent = lesson.icon;
@@ -57,23 +60,36 @@ class WorkbookLearningLab {
                 button.addEventListener('click', () => mode === 'match' ? this.startMatching(lesson) : this.startGame(lesson.id, mode));
                 buttons.appendChild(button);
             });
-            card.append(icon, title, summary, buttons);
+            card.append(page, icon, title, summary, buttons);
             grid.appendChild(card);
         });
     }
 
     startGame(lessonId, mode) {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         clearInterval(this.timer);
         this.lesson = window.WORKBOOK_LESSONS.find(item => item.id === lessonId);
         if (!this.lesson) return;
         this.mode = mode;
         this.questions = this.lesson.questions.map((question, index) => {
-            if (mode !== 'truefalse') return { ...question };
-            const showCorrect = index % 2 === 0;
-            const optionIndex = showCorrect ? question.correct : (question.correct + 1) % question.options.length;
-            return {
+            const correctAnswer = question.options[question.correct];
+            const shuffledOptions = [...question.options];
+            for (let optionIndex = shuffledOptions.length - 1; optionIndex > 0; optionIndex--) {
+                const swapIndex = Math.floor(Math.random() * (optionIndex + 1));
+                [shuffledOptions[optionIndex], shuffledOptions[swapIndex]] =
+                    [shuffledOptions[swapIndex], shuffledOptions[optionIndex]];
+            }
+            const shuffledQuestion = {
                 ...question,
-                text: `صح أم خطأ: ${question.text} — «${question.options[optionIndex]}»`,
+                options: shuffledOptions,
+                correct: shuffledOptions.indexOf(correctAnswer)
+            };
+            if (mode !== 'truefalse') return shuffledQuestion;
+            const showCorrect = index % 2 === 0;
+            const optionIndex = showCorrect ? shuffledQuestion.correct : (shuffledQuestion.correct + 1) % shuffledQuestion.options.length;
+            return {
+                ...shuffledQuestion,
+                text: `صح أم خطأ: ${shuffledQuestion.text} — «${shuffledQuestion.options[optionIndex]}»`,
                 options: ['صح', 'خطأ'],
                 correct: showCorrect ? 0 : 1
             };
@@ -212,6 +228,7 @@ class WorkbookLearningLab {
     }
 
     startMatching(lesson) {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         this.lesson = lesson;
         this.matchedPairs.clear();
         this.matchSelection = null;
@@ -310,6 +327,7 @@ class WorkbookLearningLab {
     }
 
     openStory(story) {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         this.story = story;
         this.storyScene = 0;
         document.getElementById('workbook-story-reader').classList.remove('hidden');

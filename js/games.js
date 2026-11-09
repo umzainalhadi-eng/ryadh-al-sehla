@@ -288,7 +288,7 @@ class GamesManager {
         }
 
         const countEl = document.getElementById('games-count-badge');
-        if (countEl) countEl.textContent = `${games.length} لعبة من دروس الكتابين`;
+        if (countEl) countEl.textContent = `${games.length} لعبة تعليمية`;
 
         if (games.length === 0) {
             grid.innerHTML = `<div class="p-8 text-center text-muted" style="grid-column: 1/-1;">لا توجد ألعاب مطابقة لبحثك، جرب كلمة أخرى!</div>`;
@@ -339,7 +339,8 @@ class GamesManager {
         });
 
         const searchInput = document.getElementById('search-games-input');
-        if (searchInput) {
+        if (searchInput && searchInput.dataset.platformBound !== 'true') {
+            searchInput.dataset.platformBound = 'true';
             searchInput.addEventListener('input', (e) => {
                 this.searchQuery = e.target.value.trim();
                 this.renderGamesGrid();
@@ -348,6 +349,7 @@ class GamesManager {
     }
 
     launchGame(gameId) {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         const gameType = window.appStorage.getGames().find(item => item.id === gameId);
         if (!gameType) return;
         if (window.appStorage.getCompletedGames().includes(gameId)) return;
@@ -609,6 +611,7 @@ class GamesManager {
     }
 
     spinWheel() {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         if (this.wheelSpinning) return;
         this.wheelSpinning = true;
         const spinBtn = document.getElementById('spin-wheel-btn');

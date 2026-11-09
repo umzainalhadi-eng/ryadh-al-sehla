@@ -1,7 +1,8 @@
 // Storage Management with LocalStorage persistence - رياض اللغة العربية
 class AppStorage {
     constructor() {
-        this.STORAGE_KEY = 'riyadh_al_lugha_v2';
+        const activeStudentId = localStorage.getItem('riyadh_active_student_account');
+        this.STORAGE_KEY = activeStudentId ? `riyadh_student_${activeStudentId}` : 'riyadh_al_lugha_v2';
         this.data = this.loadData();
         this.normalizeData();
     }
@@ -110,6 +111,45 @@ class AppStorage {
     // Current User & Student Accounts
     getCurrentUser() {
         return this.data.currentUser || this.data.students[0];
+    }
+
+    bindStudentAccount(userId, profile) {
+        const key = `riyadh_student_${userId}`;
+        const changedAccount = localStorage.getItem('riyadh_active_student_account') !== userId;
+        if (this.STORAGE_KEY !== key) {
+            let saved = {};
+            try {
+                saved = JSON.parse(localStorage.getItem(key) || '{}');
+            } catch (error) {
+                console.error('تعذر تحميل بيانات حساب الطالب.', error);
+            }
+            this.STORAGE_KEY = key;
+            this.data = {
+                ...JSON.parse(JSON.stringify(INITIAL_DATA)),
+                ...saved,
+                students: Array.isArray(saved.students) ? saved.students : [],
+                currentUser: saved.currentUser || null
+            };
+        }
+        const student = this.data.students.find(item => item.id === userId) || {
+            id: userId,
+            name: profile.name,
+            classId: 'cls-5',
+            className: profile.className,
+            avatar: '🦁',
+            points: 0,
+            weeklyPoints: 0,
+            streak: 1,
+            badges: [],
+            enthusiasmDays: []
+        };
+        student.name = profile.name;
+        student.className = profile.className;
+        this.data.students = [student];
+        this.data.currentUser = student;
+        localStorage.setItem('riyadh_active_student_account', userId);
+        this.saveData();
+        return changedAccount;
     }
 
     setCurrentUser(studentId) {
@@ -337,7 +377,10 @@ class AppStorage {
 
     // 100 Games Catalog
     getGames() {
-        return window.BOOK_CURRICULUM?.games || [];
+        return [
+            ...(window.BOOK_CURRICULUM?.games || []),
+            ...(window.platformContent?.getItems('game').map(item => window.platformContent.safeItem(item)) || [])
+        ];
     }
 
     ensureArabicMediaContent() {
@@ -361,12 +404,18 @@ class AppStorage {
 
     getStories() {
         this.ensureArabicMediaContent();
-        return window.BOOK_CURRICULUM?.stories || [];
+        return [
+            ...(window.BOOK_CURRICULUM?.stories || []),
+            ...(window.platformContent?.getItems('story').map(item => window.platformContent.safeItem(item)) || [])
+        ];
     }
 
     getCinemaFilms() {
         this.ensureArabicMediaContent();
-        return window.BOOK_CURRICULUM?.films || [];
+        return [
+            ...(window.BOOK_CURRICULUM?.films || []),
+            ...(window.platformContent?.getItems('film').map(item => window.platformContent.safeItem(item)) || [])
+        ];
     }
 
     ensureLeaderboardHistory() {

@@ -74,6 +74,7 @@ class ReadingBookManager {
     }
 
     startChallenge(lessonId, gameMode = 'quiz') {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         clearInterval(this.timer);
         this.selectedLessonId = lessonId;
         this.gameMode = gameMode;

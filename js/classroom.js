@@ -19,8 +19,8 @@ class ClassroomService {
             throw new Error('تعذر تحميل مكتبة Supabase. تحقق من اتصال الإنترنت وحاول مجدداً.');
         }
         if (!this.clients.has(scope)) {
-            const options = scope.startsWith('student:')
-                ? { auth: { storageKey: `riyadh_classroom_${scope.slice('student:'.length)}` } }
+            const options = scope === 'student-auth'
+                ? { auth: { storageKey: 'riyadh_classroom_student_auth_v2' } }
                 : undefined;
             this.clients.set(scope, window.supabase.createClient(
                 window.SUPABASE_CONFIG.url,
@@ -32,42 +32,82 @@ class ClassroomService {
     }
 
     getStudentClient() {
-        const student = window.appStorage?.getCurrentUser();
-        if (!student?.id) throw new Error('تعذر تحديد حساب الطالب الحالي.');
-        return this.getClient(`student:${encodeURIComponent(student.id)}`);
+        return this.getClient('student-auth');
     }
 
     async ensureStudentSession() {
         const client = this.getStudentClient();
         this.studentClient = client;
-        const { data, error } = await client.auth.getSession();
+        const { data, error } = await client.auth.getUser();
         if (error) throw error;
-
-        if (data.session?.user?.is_anonymous) {
-            this.studentId = data.session.user.id;
-            return this.studentId;
+        if (!data.user || data.user.is_anonymous) {
+            throw new Error('سجّل الدخول بحساب طالب وافق عليه المعلم أولاً.');
         }
-
-        if (data.session) {
-            const { error: signOutError } = await client.auth.signOut();
-            if (signOutError) throw signOutError;
-        }
-
-        const { data: anonymousSession, error: signInError } = await client.auth.signInAnonymously();
-        if (signInError) throw signInError;
-        this.studentId = anonymousSession.user.id;
+        const { data: approved, error: approvalError } = await client.rpc('is_classroom_student_approved');
+        if (approvalError) throw approvalError;
+        if (!approved) throw new Error('حسابك ينتظر موافقة المعلم.');
+        this.studentId = data.user.id;
         return this.studentId;
+    }
+
+    async registerStudent(email, password, studentName, className) {
+        const client = this.getStudentClient();
+        const { data, error } = await client.auth.signUp({ email, password });
+        if (error) throw error;
+        if (!data.session || !data.user) {
+            return { confirmationRequired: true };
+        }
+        const { error: requestError } = await client.rpc('request_student_access', {
+            p_student_name: studentName,
+            p_class_name: className
+        });
+        if (requestError) throw requestError;
+        return { confirmationRequired: false };
+    }
+
+    async loginStudent(email, password) {
+        const client = this.getStudentClient();
+        const { data, error } = await client.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        const { data: access, error: accessError } = await client
+            .from('classroom_student_access')
+            .select('status, student_name, class_name')
+            .eq('student_id', data.user.id)
+            .maybeSingle();
+        if (accessError) throw accessError;
+        return access;
+    }
+
+    async requestStudentAccess(studentName, className) {
+        const client = this.getStudentClient();
+        const { error } = await client.rpc('request_student_access', {
+            p_student_name: studentName,
+            p_class_name: className
+        });
+        if (error) throw error;
+    }
+
+    async signOutStudent() {
+        const { error } = await this.getStudentClient().auth.signOut();
+        if (error) throw error;
+        this.studentId = null;
     }
 
     async submitStudentWork({ kind, title, body, answers = [], score = null }) {
         await this.ensureStudentSession();
         const client = this.studentClient;
-        const student = window.appStorage?.getCurrentUser();
-        if (!student?.name) throw new Error('تعذر تحديد حساب الطالب الحالي.');
+        const { data: userData, error: userError } = await client.auth.getUser();
+        if (userError) throw userError;
+        const { data: student, error: studentError } = await client
+            .from('classroom_student_access')
+            .select('student_name, class_name')
+            .eq('student_id', userData.user.id)
+            .single();
+        if (studentError) throw studentError;
 
         const { data, error } = await client.rpc('create_classroom_thread', {
-            p_student_name: student.name,
-            p_class_name: student.className || '',
+            p_student_name: student.student_name,
+            p_class_name: student.class_name || '',
             p_kind: kind,
             p_title: title,
             p_body: body,
@@ -90,8 +130,12 @@ class ClassroomService {
         if (error) throw error;
     }
 
-    async loginTeacher(email, password) {
+    async loginTeacher(usernameOrEmail, password) {
         const client = this.getClient();
+        const identifier = usernameOrEmail.trim();
+        const email = identifier.toLowerCase() === 'ali_dahan'
+            ? 'alidahan@manaratalsehla.bh'
+            : identifier;
         const { data, error } = await client.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
@@ -105,6 +149,24 @@ class ClassroomService {
 
     async signOutTeacher() {
         const { error } = await this.getClient().auth.signOut();
+        if (error) throw error;
+    }
+
+    async changeTeacherPassword(password) {
+        if (typeof password !== 'string' || password.length < 8) {
+            throw new Error('يجب أن تتكون كلمة المرور الجديدة من 8 أحرف على الأقل.');
+        }
+        const client = this.getClient();
+        const { data: userData, error: userError } = await client.auth.getUser();
+        if (userError) throw userError;
+        if (!userData.user || userData.user.is_anonymous) {
+            throw new Error('سجّل الدخول بحساب المعلم أولاً.');
+        }
+        const { data: authorized, error: roleError } = await client.rpc('is_classroom_teacher');
+        if (roleError) throw roleError;
+        if (!authorized) throw new Error('هذا الحساب غير مخوّل بإدارة حسابات المعلم.');
+
+        const { error } = await client.auth.updateUser({ password });
         if (error) throw error;
     }
 
@@ -192,6 +254,29 @@ class ClassroomService {
             teacher_id: userData.user.id,
             reaction,
             updated_at: new Date().toISOString()
+        });
+        if (error) throw error;
+    }
+
+    async listStudentAccessRequests() {
+        const client = this.getClient('teacher');
+        const { data: authorized, error: roleError } = await client.rpc('is_classroom_teacher');
+        if (roleError) throw roleError;
+        if (!authorized) throw new Error('يلزم حساب معلم معتمد لعرض طلبات الحسابات.');
+        const { data, error } = await client
+            .from('classroom_student_access')
+            .select('student_id, student_name, class_name, status, requested_at')
+            .eq('status', 'pending')
+            .order('requested_at', { ascending: true });
+        if (error) throw error;
+        return data || [];
+    }
+
+    async reviewStudentAccessRequest(studentId, status) {
+        const client = this.getClient('teacher');
+        const { error } = await client.rpc('review_student_access', {
+            p_student_id: studentId,
+            p_status: status
         });
         if (error) throw error;
     }
@@ -335,9 +420,62 @@ class ClassroomService {
         const container = document.getElementById('teacher-classroom-threads');
         if (!container) return;
         await this.renderTeacherThreads();
+        await this.renderStudentAccessRequests();
         window.setInterval(() => {
-            if (!document.hidden) this.renderTeacherThreads();
+            if (!document.hidden) {
+                this.renderTeacherThreads();
+                this.renderStudentAccessRequests();
+            }
         }, 20000);
+    }
+
+    async renderStudentAccessRequests() {
+        const container = document.getElementById('teacher-student-access-requests');
+        if (!container) return;
+        const status = document.getElementById('teacher-student-access-status');
+        try {
+            const requests = await this.listStudentAccessRequests();
+            container.replaceChildren();
+            if (!requests.length) {
+                container.append(this.element('p', 'text-muted', 'لا توجد طلبات موافقة معلقة.'));
+                return;
+            }
+            requests.forEach(request => {
+                const row = this.element('article', 'quiz-box-card mb-3');
+                const info = this.element(
+                    'p',
+                    'font-bold mb-2',
+                    `${request.student_name} — ${request.class_name} • ${this.formatDate(request.requested_at)}`
+                );
+                const actions = this.element('div', 'flex gap-2 flex-wrap');
+                [
+                    ['approved', '✅ موافقة'],
+                    ['rejected', 'رفض الطلب']
+                ].forEach(([decision, label]) => {
+                    const button = this.element('button', `btn ${decision === 'approved' ? 'btn-primary' : 'btn-outline'} btn-sm`, label);
+                    button.type = 'button';
+                    button.addEventListener('click', async () => {
+                        button.disabled = true;
+                        try {
+                            await this.reviewStudentAccessRequest(request.student_id, decision);
+                            this.setStatus(status, decision === 'approved' ? 'تم اعتماد الحساب.' : 'تم رفض الطلب.');
+                            await this.renderStudentAccessRequests();
+                        } catch (error) {
+                            console.error('تعذرت مراجعة طلب حساب الطالب.', error);
+                            this.setStatus(status, `تعذرت مراجعة الطلب: ${error.message}`, true);
+                        } finally {
+                            if (button.isConnected) button.disabled = false;
+                        }
+                    });
+                    actions.append(button);
+                });
+                row.append(info, actions);
+                container.append(row);
+            });
+        } catch (error) {
+            console.error('تعذر تحميل طلبات حسابات الطلاب.', error);
+            this.setStatus(status, `تعذر تحميل طلبات الحسابات: ${error.message}`, true);
+        }
     }
 
     async renderTeacherThreads() {

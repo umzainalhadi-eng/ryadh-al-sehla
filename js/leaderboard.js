@@ -17,23 +17,26 @@ class LeaderboardManager {
         if (!container || !student) return;
 
         container.innerHTML = `
-            <div class="gold-card-wrapper">
+            <section class="gold-card-wrapper som-award-card" aria-labelledby="som-student-name">
                 <div class="gold-shimmer-effect"></div>
                 <div class="som-header">
-                    <span class="golden-crown-badge">👑 وسام العرش والقدوة</span>
+                    <div class="som-heading-group">
+                        <span class="golden-crown-badge">👑 وسام العرش والقدوة</span>
+                        <span class="som-heading-caption">تكريم الاجتهاد والقدوة الحسنة</span>
+                    </div>
                     <span class="som-period">${student.month}</span>
                 </div>
                 
                 <div class="som-body">
                     <div class="som-avatar-wrap">
                         <div class="som-avatar-frame">
-                            <span class="som-avatar">${student.avatar}</span>
+                            <span class="som-avatar" aria-hidden="true">${student.avatar}</span>
                         </div>
                         <div class="som-grade">${student.grade}</div>
                     </div>
 
                     <div class="som-details">
-                        <h2 class="som-name">${student.name}</h2>
+                        <h2 class="som-name" id="som-student-name">${student.name}</h2>
                         <div class="som-title-tag">🌟 ${student.title}</div>
                         
                         <div class="som-metrics-row">
@@ -51,9 +54,11 @@ class LeaderboardManager {
                             </div>
                         </div>
 
-                        <div class="som-badges-strip">
-                            ${student.badges.map(b => `<span class="som-mini-badge">${b}</span>`).join('')}
-                        </div>
+                        ${student.badges?.length ? `
+                            <div class="som-badges-strip" aria-label="أوسمة الطالب">
+                                ${student.badges.map(b => `<span class="som-mini-badge">${b}</span>`).join('')}
+                            </div>
+                        ` : ''}
 
                         <div class="teacher-endorsement-quote">
                             <div class="teacher-quote-header">
@@ -74,7 +79,7 @@ class LeaderboardManager {
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
         `;
 
         // Clap Event

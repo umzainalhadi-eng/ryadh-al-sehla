@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة رياض اللغة العربية | المشرف العام أ. مؤمن & المعلم أ. علي دحان</title>
-    <link rel="stylesheet" href="css/style.css?v=20261102-mobile">
+    <link rel="stylesheet" href="css/style.css?v=20261102-teacher-account">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍🏫</text></svg>">
 </head>
 <body>
@@ -16,7 +16,7 @@
                 <div class="logo-badge" style="background: linear-gradient(135deg, #10b981, #06b6d4);">📖</div>
                 <div class="logo-text">
                     <h1>رِياضُ اللُّغَةِ العَرَبِيَّةِ</h1>
-                    <p>مدارس منارات السهل الأهلية | إشراف المعلم <strong>أ. علي دحان</strong> والمشرف العام <strong>أ. مؤمن</strong></p>
+                    <p>مدارس منارات السهلة الأهلية | إشراف المعلم <strong>أ. علي دحان</strong> والمشرف العام <strong>أ. مؤمن</strong></p>
                 </div>
             </a>
 
@@ -52,7 +52,7 @@
             <p class="text-muted mb-4">سجّل الدخول بحساب المعلم المعتمد في Supabase للوصول إلى بيانات الطلاب.</p>
             <form id="teacher-login-form">
                 <div class="form-group mb-3">
-                    <input type="email" id="input-teacher-email" class="form-control" placeholder="البريد الإلكتروني للمعلم" autocomplete="username" required>
+                    <input type="text" id="input-teacher-email" class="form-control" placeholder="اسم المستخدم أو البريد الإلكتروني" autocomplete="username" dir="ltr" required>
                 </div>
                 <div class="form-group mb-4">
                     <input type="password" id="input-teacher-password" class="form-control" placeholder="كلمة المرور" autocomplete="current-password" required>
@@ -77,6 +77,33 @@
                 </div>
             </div>
 
+            <section class="quiz-box-card mb-6" id="teacher-account-settings">
+                <h3 class="text-2xl font-extrabold mb-2">⚙️ إعدادات حساب المعلم</h3>
+                <p class="text-muted mb-4">اختر الاسم الأول الذي يظهر لطلاب المنصة، أو غيّر كلمة مرور حسابك. تُحفظ التغييرات عبر Supabase.</p>
+                <div class="teacher-account-settings-grid">
+                    <form id="teacher-display-name-form">
+                        <label class="form-label font-bold" for="teacher-display-first-name">الاسم الأول الظاهر</label>
+                        <select id="teacher-display-first-name" class="form-control mb-3" required>
+                            <option value="علي">أ. علي</option>
+                            <option value="مؤمن">أ. مؤمن</option>
+                            <option value="محمد">أ. محمد</option>
+                            <option value="فهد">أ. فهد</option>
+                            <option value="سلطان">أ. سلطان</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">حفظ الاسم الظاهر</button>
+                    </form>
+
+                    <form id="teacher-password-form">
+                        <label class="form-label font-bold" for="teacher-new-password">كلمة المرور الجديدة</label>
+                        <input id="teacher-new-password" class="form-control mb-3" type="password" minlength="8" autocomplete="new-password" required>
+                        <label class="form-label font-bold" for="teacher-confirm-password">تأكيد كلمة المرور الجديدة</label>
+                        <input id="teacher-confirm-password" class="form-control mb-3" type="password" minlength="8" autocomplete="new-password" required>
+                        <button type="submit" class="btn btn-outline">تحديث كلمة المرور</button>
+                    </form>
+                </div>
+                <p id="teacher-account-settings-status" class="text-sm font-bold mt-3" role="status" aria-live="polite"></p>
+            </section>
+
             <section class="quiz-box-card mb-6" id="teacher-classroom">
                 <div class="flex justify-between items-center flex-wrap gap-2 mb-3">
                     <div>
@@ -89,13 +116,99 @@
                 <div id="teacher-classroom-threads" aria-live="polite"></div>
             </section>
 
+            <section class="quiz-box-card mb-6" id="teacher-student-access">
+                <h3 class="text-2xl font-extrabold mb-2">🛂 طلبات حسابات الطلاب</h3>
+                <p class="text-muted mb-3">لن يتمكن الطالب من اللعب أو استخدام أنشطة المنصة قبل اعتماد حسابه هنا.</p>
+                <p id="teacher-student-access-status" class="text-sm font-bold mb-3" role="status" aria-live="polite"></p>
+                <div id="teacher-student-access-requests" aria-live="polite"></div>
+            </section>
+
+            <section class="quiz-box-card mb-6" id="teacher-content-studio">
+                <div class="mb-4">
+                    <h3 class="text-2xl font-extrabold">🎨 استوديو محتوى المنصة</h3>
+                    <p class="text-muted">أضف أقساماً وألعاباً وقصصاً وأفلاماً، أو خصص ألوان المنصة واسمها. تُحفظ التعديلات في Supabase وتظهر للطلاب بعد تحديث الصفحة.</p>
+                </div>
+                <div class="teacher-studio-grid">
+                    <form id="teacher-content-form" class="teacher-content-form">
+                        <input type="hidden" name="content-id">
+                        <label class="form-label font-bold" for="teacher-content-kind">نوع المحتوى</label>
+                        <select id="teacher-content-kind" name="content-kind" class="form-control mb-3">
+                            <option value="section">قسم جديد</option>
+                            <option value="game">لعبة سؤال وجواب</option>
+                            <option value="story">قصة تفاعلية</option>
+                            <option value="film">فيلم تعليمي</option>
+                            <option value="appearance">تخصيص شكل المنصة</option>
+                        </select>
+
+                        <label class="form-label font-bold" for="teacher-content-title">العنوان / اسم المنصة</label>
+                        <input id="teacher-content-title" name="content-title" class="form-control mb-3" maxlength="160" required>
+
+                        <div id="teacher-content-category-wrap">
+                            <label class="form-label font-bold" for="teacher-content-category">القسم أو الموضوع</label>
+                            <input id="teacher-content-category" name="content-category" class="form-control mb-3" maxlength="120" placeholder="مثال: الفصل الأول">
+                        </div>
+
+                        <div data-content-fields="section game story film">
+                            <label class="form-label font-bold" for="teacher-content-icon">أيقونة تعبّر عن المحتوى</label>
+                            <input id="teacher-content-icon" name="content-icon" class="form-control mb-3" maxlength="12" placeholder="📚">
+                            <label class="form-label font-bold" for="teacher-content-summary">وصف مختصر</label>
+                            <textarea id="teacher-content-summary" name="content-summary" class="form-control mb-3" rows="2" maxlength="700"></textarea>
+                        </div>
+
+                        <div data-content-fields="section">
+                            <label class="form-label font-bold" for="teacher-content-link">رابط اختياري للقسم</label>
+                            <input id="teacher-content-link" name="content-link" class="form-control mb-3" type="url" placeholder="https://...">
+                        </div>
+
+                        <div data-content-fields="story">
+                            <label class="form-label font-bold" for="teacher-content-main-text">نص القصة (كل فقرة تصبح مشهداً)</label>
+                            <textarea id="teacher-content-main-text" name="content-main-text" class="form-control mb-3" rows="5"></textarea>
+                        </div>
+
+                        <div data-content-fields="game story film">
+                            <label class="form-label font-bold" for="teacher-content-question">سؤال اللعبة / سؤال القصة أو الفيلم الختامي</label>
+                            <textarea id="teacher-content-question" name="content-question" class="form-control mb-3" rows="2"></textarea>
+                            <label class="form-label font-bold" for="teacher-content-options">الخيارات (خيار في كل سطر)</label>
+                            <textarea id="teacher-content-options" name="content-options" class="form-control mb-3" rows="4" placeholder="الإجابة الأولى&#10;الإجابة الثانية"></textarea>
+                            <label class="form-label font-bold" for="teacher-content-correct">رقم الإجابة الصحيحة</label>
+                            <input id="teacher-content-correct" name="content-correct" class="form-control mb-3" type="number" min="1" value="1">
+                        </div>
+
+                        <div data-content-fields="film">
+                            <label class="form-label font-bold" for="teacher-content-scenes">مشاهد الفيلم (عنوان المشهد | النص، مشهد في كل سطر)</label>
+                            <textarea id="teacher-content-scenes" name="content-scenes" class="form-control mb-3" rows="4" placeholder="المشهد الأول | النص التعليمي"></textarea>
+                        </div>
+
+                        <div data-content-fields="appearance" hidden>
+                            <label class="form-label font-bold" for="teacher-content-primary-color">اللون الرئيسي</label>
+                            <input id="teacher-content-primary-color" name="content-primary-color" class="form-control mb-3" type="color" value="#4f46e5">
+                            <label class="form-label font-bold" for="teacher-content-secondary-color">اللون الثانوي</label>
+                            <input id="teacher-content-secondary-color" name="content-secondary-color" class="form-control mb-3" type="color" value="#06b6d4">
+                            <label class="form-label font-bold" for="teacher-content-accent-color">لون التمييز</label>
+                            <input id="teacher-content-accent-color" name="content-accent-color" class="form-control mb-3" type="color" value="#f59e0b">
+                        </div>
+
+                        <p id="teacher-content-status" class="text-sm font-bold" role="status" aria-live="polite"></p>
+                        <div class="flex gap-2 flex-wrap mt-3">
+                            <button type="submit" class="btn btn-primary">☁️ حفظ ومزامنة للجميع</button>
+                            <button type="button" class="btn btn-outline" id="teacher-content-reset">إلغاء / محتوى جديد</button>
+                        </div>
+                    </form>
+
+                    <div>
+                        <h4 class="text-xl font-extrabold mb-3">محتوى أضافه المعلم</h4>
+                        <div id="teacher-content-list" class="teacher-content-list" aria-live="polite"></div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Role Section 1: المشرف العام (أ. مؤمن) -->
             <div class="gold-card-wrapper mb-6" style="padding: 1.75rem; border-color: #0284c7; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);">
                 <div class="flex items-center gap-3 mb-4">
                     <span style="font-size: 2.5rem;">👔</span>
                     <div>
                         <h3 class="font-extrabold text-xl text-sky-900">صلاحيات المشرف العام: أ. مؤمن</h3>
-                        <p class="text-sm text-sky-800">تعيين كل معلم على صف معين ومتابعة صفوف مدارس منارات السهل</p>
+                        <p class="text-sm text-sky-800">تعيين كل معلم على صف معين ومتابعة صفوف مدارس منارات السهلة</p>
                     </div>
                 </div>
 
@@ -163,73 +276,103 @@
                     <a href="weekly.html" class="btn btn-outline w-full text-center">معاينة صفحة النشاط الأسبوعي ←</a>
                 </div>
 
-                <!-- Card 2: Teacher Adds Students to his Class -->
                 <div class="quiz-box-card" style="margin: 0; max-width: 100%; border: 2px solid #4f46e5;">
                     <div class="flex items-center gap-2 mb-3">
                         <span style="font-size: 2rem;">👨‍🎓</span>
                         <div>
-                            <h3 class="font-extrabold text-xl text-primary">إضافة طالب جديد وإنشاء حسابه</h3>
-                            <p class="text-xs text-muted">المعلم يضيف طلاب صفه، ولكل طالب حسابه الخاص لحفظ النقاط</p>
+                            <h3 class="font-extrabold text-xl text-primary">حسابات الطلاب المعتمدة</h3>
+                            <p class="text-sm text-muted">ينشئ الطالب حسابه من بوابة المنصة، ثم ينتظر موافقتك قبل فتح الألعاب والدروس والقصص والأفلام.</p>
                         </div>
                     </div>
-
-                    <form id="form-teacher-add-student">
-                        <div class="mb-3">
-                            <label class="form-label text-sm font-bold">اسم الطالب ثلاثياً:</label>
-                            <input type="text" id="new-std-name" class="form-control" placeholder="مثال: فيصل بن عبدالعزيز..." required>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
-                            <div>
-                                <label class="form-label text-sm font-bold">الصف والفصل:</label>
-                                <select id="new-std-class" class="form-control">
-                                    <option value="cls-5">الصف الخامس (أ) المتميز</option>
-                                    <option value="cls-4">الصف الرابع الابتدائي</option>
-                                    <option value="cls-6">الصف السادس الابتدائي</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="form-label text-sm font-bold">الشخصية الرمزية:</label>
-                                <input type="text" id="new-std-avatar" class="form-control text-center" value="🦁">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-full">
-                            + إضافة الطالب وتفعيل حسابه فوراً
-                        </button>
-                    </form>
-
-                    <hr class="my-4 border-[var(--border)]">
-                    <h4 class="font-bold text-sm mb-2">قائمة طلاب الصف وحساباتهم (التبديل للحساب):</h4>
-                    <div id="teacher-students-list" class="flex flex-col gap-2" style="max-height: 250px; overflow-y: auto;">
-                        <!-- Populated dynamically via teacherManager.renderStudentsList() -->
-                    </div>
+                    <a href="#teacher-student-access" class="btn btn-outline">مراجعة طلبات الموافقة ↓</a>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Scripts -->
-    <script src="js/audio.js?v=20261028-1"></script>
+    <script src="js/audio.js?v=20261102-interaction"></script>
     <script src="js/confetti.js?v=20261028-1"></script>
     <script src="js/data.js?v=20261028-1"></script>
     <script src="js/reading-data.js?v=20261101-2"></script>
-    <script src="js/workbook-data.js?v=20261101-3"></script>
-    <script src="js/book-curriculum.js?v=20261101-1"></script>
-    <script src="js/storage.js?v=20261101-3"></script>
+    <script src="js/workbook-data.js?v=20261104-stories-films"></script>
+    <script src="js/workbook-extended-data.js?v=20261102-extended"></script>
+    <script src="js/book-curriculum.js?v=20261102-1"></script>
+    <script src="js/storage.js?v=20261104-account-storage"></script>
     <script src="js/games.js?v=20261028-1"></script>
     <script src="js/stories.js?v=20261028-1"></script>
     <script src="js/cinema.js?v=20261028-1"></script>
     <script src="js/leaderboard.js?v=20261028-1"></script>
     <script src="js/teacher.js?v=20261101-2"></script>
-    <script src="js/app.js?v=20261028-1"></script>
+    <script src="js/app.js?v=20261102-teacher-studio"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js?v=20261101-1"></script>
-    <script src="js/classroom.js?v=20261101-3"></script>
+    <script src="js/classroom.js?v=20261108-teacher-username"></script>
+    <script src="js/platform-content.js?v=20261104-approved-only"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const authBox = document.getElementById('teacher-auth-box');
             const dashContent = document.getElementById('teacher-dashboard-content');
             const loginForm = document.getElementById('teacher-login-form');
             const status = document.getElementById('teacher-login-status');
+            const accountStatus = document.getElementById('teacher-account-settings-status');
+            let accountSettingsReady = false;
+
+            const setAccountStatus = (message, isError = false) => {
+                accountStatus.textContent = message;
+                accountStatus.classList.toggle('text-danger', isError);
+                accountStatus.classList.toggle('text-success', !isError);
+            };
+
+            const setupTeacherAccountSettings = () => {
+                if (accountSettingsReady) return;
+                accountSettingsReady = true;
+                const profile = window.platformContent.teacherProfile;
+                const initialName = profile?.display_name?.replace(/^أ\.\s*/, '');
+                const nameSelect = document.getElementById('teacher-display-first-name');
+                if (initialName && [...nameSelect.options].some(option => option.value === initialName)) {
+                    nameSelect.value = initialName;
+                }
+
+                document.getElementById('teacher-display-name-form').addEventListener('submit', async event => {
+                    event.preventDefault();
+                    const button = event.currentTarget.querySelector('[type="submit"]');
+                    button.disabled = true;
+                    try {
+                        await window.platformContent.updateTeacherName(nameSelect.value);
+                        setAccountStatus('تم تحديث الاسم الظاهر للطلاب على المنصة.');
+                    } catch (error) {
+                        console.error('تعذر تحديث الاسم الظاهر للمعلم.', error);
+                        setAccountStatus(`تعذر تحديث الاسم: ${error.message}`, true);
+                    } finally {
+                        button.disabled = false;
+                    }
+                });
+
+                document.getElementById('teacher-password-form').addEventListener('submit', async event => {
+                    event.preventDefault();
+                    const form = event.currentTarget;
+                    const newPassword = document.getElementById('teacher-new-password').value;
+                    const confirmPassword = document.getElementById('teacher-confirm-password').value;
+                    if (newPassword !== confirmPassword) {
+                        setAccountStatus('كلمتا المرور غير متطابقتين.', true);
+                        return;
+                    }
+                    const button = form.querySelector('[type="submit"]');
+                    button.disabled = true;
+                    try {
+                        await window.classroomService.changeTeacherPassword(newPassword);
+                        form.reset();
+                        setAccountStatus('تم تغيير كلمة المرور. استخدم الجديدة في تسجيل الدخول القادم.');
+                    } catch (error) {
+                        console.error('تعذر تغيير كلمة مرور المعلم.', error);
+                        setAccountStatus(`تعذر تغيير كلمة المرور: ${error.message}`, true);
+                    } finally {
+                        button.disabled = false;
+                    }
+                });
+            };
+
             if (!window.classroomService.isConfigured()) {
                 window.classroomService.setStatus(status, 'أضف رابط Supabase ومفتاح anon إلى js/supabase-config.js لتفعيل تسجيل الدخول.', true);
             }
@@ -241,6 +384,10 @@
                     window.teacherManager.setupMoamenPanel();
                     window.teacherManager.renderStudentsList();
                     window.teacherManager.renderClassesTable();
+                    await window.platformContent.ready;
+                    await window.platformContent.load();
+                    window.platformContent.setupStudio();
+                    setupTeacherAccountSettings();
                     await window.classroomService.initTeacherInbox();
                     if (window.soundEngine) window.soundEngine.levelUp();
             };
@@ -265,7 +412,10 @@
             });
 
             document.getElementById('teacher-classroom-refresh')?.addEventListener('click', () =>
-                window.classroomService.renderTeacherThreads()
+                Promise.all([
+                    window.classroomService.renderTeacherThreads(),
+                    window.classroomService.renderStudentAccessRequests()
+                ])
             );
             document.getElementById('btn-teacher-signout')?.addEventListener('click', async () => {
                 try {

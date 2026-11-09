@@ -43,6 +43,7 @@ class StoriesManager {
     }
 
     openStory(storyId) {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         const stories = window.appStorage.getStories();
         this.currentStory = stories.find(s => s.id === storyId);
         if (!this.currentStory) return;

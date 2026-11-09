@@ -256,28 +256,38 @@ class App {
             const student = window.appStorage.getStudentOfTheMonth();
             if (student) {
                 spot.innerHTML = `
-                    <div class="gold-card-wrapper" style="margin-bottom: 2rem; padding: 1.5rem;">
+                    <section class="gold-card-wrapper som-award-card som-home-card" aria-labelledby="home-som-student-name">
                         <div class="gold-shimmer-effect"></div>
-                        <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
-                            <span class="golden-crown-badge">👑 وسام العرش والقدوة - طالب الشهر في رياض اللغة العربية</span>
+                        <div class="som-header">
+                            <div class="som-heading-group">
+                                <span class="golden-crown-badge">👑 وسام العرش والقدوة</span>
+                                <span class="som-heading-caption">طالب الشهر في رياض اللغة العربية</span>
+                            </div>
                             <span class="som-period">${student.month}</span>
                         </div>
-                        <div class="flex items-center gap-4 flex-wrap mt-3">
-                            <div class="som-avatar-frame" style="width: 80px; height: 80px;">
-                                <span style="font-size: 2.8rem;">${student.avatar}</span>
+                        <div class="som-home-body">
+                            <div class="som-avatar-wrap">
+                                <div class="som-avatar-frame som-home-avatar">
+                                    <span class="som-avatar" aria-hidden="true">${student.avatar}</span>
+                                </div>
+                                <span class="som-grade">${student.grade}</span>
                             </div>
-                            <div style="flex: 1; min-width: 200px;">
-                                <h3 class="som-name" style="font-size: 1.5rem; margin-bottom: 0.1rem;">${student.name}</h3>
-                                <div class="som-title-tag" style="margin-bottom: 0.5rem;">🌟 ${student.title} (${student.grade})</div>
-                                <p class="text-sm italic" style="color: #78350f;">«${student.teacherNote}»</p>
+                            <div class="som-home-details">
+                                <h3 class="som-name" id="home-som-student-name">${student.name}</h3>
+                                <div class="som-title-tag">🌟 ${student.title}</div>
+                                <p class="som-home-quote">«${student.teacherNote}»</p>
+                                <div class="som-home-facts">
+                                    <span>✨ ${student.totalPoints} نقطة</span>
+                                    <span>🎯 ${student.completedActivities} إنجازات</span>
+                                </div>
                             </div>
-                            <div class="flex gap-2">
+                            <div class="som-home-action">
                                 <a href="leaderboard.html" class="btn btn-gold btn-sm">
-                                    🏆 عرض لوحة الشرف والشهادة
+                                    🏆 لوحة الشرف والشهادة
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 `;
             }
         }
@@ -419,10 +429,19 @@ class App {
     setupSoundToggle() {
         const soundBtn = document.getElementById('btn-toggle-sound');
         if (soundBtn) {
-            soundBtn.addEventListener('click', () => {
-                const isEnabled = window.soundEngine.toggle();
+            const updateSoundButton = () => {
+                const isEnabled = window.soundEngine.enabled;
                 soundBtn.textContent = isEnabled ? '🔊' : '🔇';
                 soundBtn.title = isEnabled ? 'كتم الصوت' : 'تشغيل الصوت';
+                soundBtn.setAttribute('aria-label', soundBtn.title);
+                soundBtn.setAttribute('aria-pressed', String(isEnabled));
+            };
+
+            updateSoundButton();
+            soundBtn.addEventListener('click', () => {
+                const isEnabled = window.soundEngine.toggle();
+                updateSoundButton();
+                if (isEnabled) window.soundEngine.click();
             });
         }
     }

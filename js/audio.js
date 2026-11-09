@@ -2,7 +2,14 @@
 class SoundEffects {
     constructor() {
         this.ctx = null;
-        this.enabled = true;
+        this.preferenceKey = 'riyadh_sound_enabled';
+        this.lastClickAt = 0;
+        try {
+            this.enabled = localStorage.getItem(this.preferenceKey) !== 'false';
+        } catch (error) {
+            console.warn('Could not read the sound preference', error);
+            this.enabled = true;
+        }
     }
 
     init() {
@@ -13,7 +20,7 @@ class SoundEffects {
             }
         }
         if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume();
+            this.ctx.resume().catch(error => console.warn('Could not resume audio playback', error));
         }
     }
 
@@ -42,6 +49,9 @@ class SoundEffects {
 
     // Sound effect: Button Click / Pop
     click() {
+        const now = performance.now();
+        if (now - this.lastClickAt < 45) return;
+        this.lastClickAt = now;
         this.playTone(600, 'sine', 0.08, 0.08);
     }
 
@@ -110,8 +120,21 @@ class SoundEffects {
 
     toggle() {
         this.enabled = !this.enabled;
+        try {
+            localStorage.setItem(this.preferenceKey, String(this.enabled));
+        } catch (error) {
+            console.warn('Could not save the sound preference', error);
+        }
         return this.enabled;
     }
 }
 
 window.soundEngine = new SoundEffects();
+
+document.addEventListener('click', event => {
+    const target = event.target instanceof Element
+        ? event.target.closest('button:not(:disabled), a[href], [role="button"], input[type="checkbox"], input[type="radio"], input[type="submit"]:not(:disabled), select')
+        : null;
+    if (!target || target.id === 'btn-toggle-sound' || target.hasAttribute('data-no-sound')) return;
+    window.soundEngine.click();
+});

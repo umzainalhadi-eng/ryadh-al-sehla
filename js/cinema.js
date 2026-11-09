@@ -69,6 +69,7 @@ class CinemaManager {
     }
 
     loadFilm(filmId) {
+        if (window.accountGate && !window.accountGate.requireAccess()) return;
         const films = window.appStorage.getCinemaFilms();
         this.currentFilm = films.find(f => f.id === filmId);
         if (!this.currentFilm) return;

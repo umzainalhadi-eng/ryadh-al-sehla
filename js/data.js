@@ -2,7 +2,7 @@
 // Schools: Manarat Al-Sahl | Principal: Hussein Sultan | Supervisor: Ali Dahan | General Supervisor: Moamen | Creator: Hadi Al-Jad
 
 const INITIAL_DATA = {
-    school: "مدارس منارات السهل الأهلية",
+        school: "مدارس منارات السهلة الأهلية",
     schoolLogo: "images/logo_manarat_alsahl.png",
     staff: {
         "principal": {
@@ -29,7 +29,7 @@ const INITIAL_DATA = {
                 "title": "صنع وإعداد وتطوير النظام",
                 "badge": "صنع وإعداد: هادي الجد",
                 "image": "images/student_hadi_aljad.png",
-                "bio": "الطالب المبدع والمطور الذي صمم وأعد هذه المنصة المتكاملة لخدمة زملائه ومعلميه في منارات السهل."
+                "bio": "الطالب المبدع والمطور الذي صمم وأعد هذه المنصة المتكاملة لخدمة زملائه ومعلميه في منارات السهلة."
         }
 },
     classes: [

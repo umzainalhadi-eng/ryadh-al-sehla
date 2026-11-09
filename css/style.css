@@ -64,6 +64,41 @@ body {
     overflow-x: hidden;
 }
 
+button:not(:disabled),
+a[href],
+[role="button"],
+select,
+input[type="checkbox"],
+input[type="radio"] {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled):focus-visible,
+a[href]:focus-visible,
+[role="button"]:focus-visible,
+select:focus-visible,
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+    outline: 3px solid var(--secondary);
+    outline-offset: 3px;
+}
+
+@media (hover: hover) {
+    button:not(:disabled):hover,
+    a[href]:hover,
+    [role="button"]:hover {
+        filter: brightness(1.04);
+    }
+}
+
+@media (hover: none) {
+    button:not(:disabled):active,
+    a[href]:active,
+    [role="button"]:active {
+        transform: scale(0.98);
+    }
+}
+
 /* ===================================================
    Header & Gamified Student Bar
    =================================================== */
@@ -449,6 +484,29 @@ body {
     margin-bottom: 3rem;
 }
 
+.som-award-card {
+    isolation: isolate;
+    border-color: #eab308;
+    background:
+        radial-gradient(ellipse at 92% 8%, rgba(255, 255, 255, 0.9), transparent 34%),
+        linear-gradient(135deg, #fffdf5 0%, #fff4c2 48%, #fffbeb 100%);
+    box-shadow: 0 16px 38px rgba(180, 83, 9, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.som-heading-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.som-heading-caption {
+    color: #92400e;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
 .dark .gold-card-wrapper {
     background: linear-gradient(135deg, #451a03 0%, #78350f 50%, #451a03 100%);
     border-color: #f59e0b;
@@ -479,7 +537,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
 }
 
 .golden-crown-badge {
@@ -490,18 +549,24 @@ body {
     padding: 0.4rem 1.1rem;
     border-radius: var(--radius-full);
     box-shadow: 0 4px 10px rgba(180, 83, 9, 0.3);
+    text-align: center;
 }
 
 .som-period {
+    flex: 0 0 auto;
     font-weight: 800;
     color: var(--gold-dark);
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(217, 119, 6, 0.18);
+    border-radius: var(--radius-full);
+    padding: 0.35rem 0.8rem;
 }
 
 .som-body {
-    display: flex;
-    gap: 2.25rem;
+    display: grid;
+    grid-template-columns: minmax(150px, 0.32fr) minmax(0, 1fr);
+    gap: clamp(1.25rem, 4vw, 2.75rem);
     align-items: center;
-    flex-wrap: wrap;
 }
 
 .som-avatar-wrap {
@@ -538,15 +603,15 @@ body {
 }
 
 .som-details {
-    flex: 1;
-    min-width: 280px;
+    min-width: 0;
 }
 
 .som-name {
-    font-size: 2rem;
+    font-size: clamp(1.65rem, 3vw, 2.2rem);
     font-weight: 900;
     color: #78350f;
     margin-bottom: 0.25rem;
+    overflow-wrap: anywhere;
 }
 
 .som-title-tag {
@@ -634,8 +699,152 @@ body {
 
 .som-action-buttons {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
+}
+
+.som-action-buttons .btn {
+    flex: 1 1 230px;
+}
+
+.som-home-body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2rem);
+}
+
+.som-home-avatar {
+    width: 96px;
+    height: 96px;
+}
+
+.som-home-avatar .som-avatar {
+    font-size: 3.4rem;
+}
+
+.som-home-details {
+    min-width: 0;
+}
+
+.som-home-details .som-name {
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+}
+
+.som-home-details .som-title-tag {
+    margin-bottom: 0.4rem;
+}
+
+.som-home-quote {
+    color: #78350f;
+    font-size: 0.92rem;
+    font-style: italic;
+    line-height: 1.8;
+}
+
+.som-home-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.som-home-facts span {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(217, 119, 6, 0.2);
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.72);
+    color: #92400e;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.som-home-action .btn {
+    white-space: nowrap;
+}
+
+.teacher-studio-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.teacher-account-settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.teacher-account-settings-grid form {
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-elevated);
+}
+
+.teacher-content-form {
+    padding: 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface-elevated);
+}
+
+.teacher-content-list {
+    display: grid;
+    gap: 0.65rem;
+    max-height: 640px;
+    overflow: auto;
+}
+
+.teacher-content-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+}
+
+.teacher-content-row > div:first-child {
+    min-width: 0;
+}
+
+.teacher-content-row strong,
+.teacher-content-row span {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.teacher-content-row span {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.teacher-content-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.4rem;
+}
+
+.teacher-added-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.teacher-added-section {
+    margin: 0;
+}
+
+.teacher-added-section-icon {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
 }
 
 /* ===================================================
@@ -2128,4 +2337,512 @@ body {
     .intro-school-vision { font-size: 0.66rem; }
     .intro-cards-showcase { gap: 0.85rem; }
     .intro-enter-btn { font-size: 1.1rem; padding: 0.8rem 1.8rem; }
+}
+
+/* Mobile-first layout refinements */
+@media (max-width: 768px) {
+    .main-header {
+        position: relative;
+    }
+
+    .header-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        grid-template-areas: "logo stats controls";
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.65rem;
+    }
+
+    .logo-area {
+        grid-area: logo;
+        gap: 0.4rem;
+        min-width: 0;
+    }
+
+    .logo-badge {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        font-size: 1.1rem;
+    }
+
+    .logo-text {
+        min-width: 0;
+    }
+
+    .logo-text h1 {
+        font-size: clamp(0.72rem, 3.2vw, 0.95rem);
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .logo-text p {
+        display: none;
+    }
+
+    .student-stats-hud {
+        grid-area: stats;
+        display: flex;
+        width: auto;
+        max-width: max-content;
+        gap: 0.35rem;
+        padding: 0;
+        overflow: visible;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        justify-self: center;
+    }
+
+    .student-stats-hud > * {
+        flex: 0 0 auto;
+    }
+
+    .student-stats-hud .stat-chip {
+        white-space: nowrap;
+        gap: 0.15rem;
+        font-size: 0.68rem;
+    }
+
+    .student-stats-hud .stat-chip.level,
+    .student-stats-hud > .stat-chip:not(.points):not(.streak) {
+        display: none;
+    }
+
+    #header-user-points-wrap > span:first-child,
+    #header-user-points-wrap > span:last-child {
+        display: none;
+    }
+
+    .header-user-avatar {
+        width: 26px;
+        height: 26px;
+        font-size: 0.95rem;
+    }
+
+    .header-controls {
+        grid-area: controls;
+        width: auto;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 0.25rem;
+    }
+
+    .header-inner > .btn {
+        grid-area: controls;
+        justify-self: end;
+        min-height: 34px;
+        padding: 0.3rem 0.45rem;
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+
+    .header-controls .btn {
+        min-height: 34px;
+        padding: 0.3rem 0.45rem;
+        font-size: 0.72rem;
+        white-space: nowrap;
+    }
+
+    .header-controls .btn-icon {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        padding: 0;
+    }
+
+    .header-controls > button.btn-outline {
+        display: none;
+    }
+
+    .main-nav {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 90;
+    }
+
+    .nav-container {
+        gap: 0.35rem;
+        padding: 0.15rem 0.75rem;
+        scroll-snap-type: x proximity;
+        overscroll-behavior-inline: contain;
+    }
+
+    .nav-link-btn {
+        min-height: 38px;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.78rem;
+        scroll-snap-align: start;
+    }
+
+    .container {
+        padding: 1.15rem 0.85rem;
+    }
+
+    @media (max-width: 360px) {
+        .header-inner {
+            gap: 0.25rem;
+            padding-inline: 0.45rem;
+        }
+
+        .logo-badge {
+            width: 28px;
+            height: 28px;
+            flex-basis: 28px;
+        }
+
+        .student-stats-hud {
+            gap: 0.2rem;
+        }
+
+        .student-stats-hud .stat-chip {
+            font-size: 0.62rem;
+        }
+
+        .student-stats-hud .stat-chip.streak {
+            display: none;
+        }
+    }
+
+    .hero-banner {
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 1.35rem 1rem;
+        margin-bottom: 1.4rem;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: clamp(1.65rem, 7vw, 2.1rem);
+        line-height: 1.35;
+    }
+
+    .hero-subtitle {
+        font-size: 0.96rem;
+        line-height: 1.8;
+        margin-bottom: 1.15rem;
+    }
+
+    .hero-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        min-height: 46px;
+    }
+
+    .hero-graphics {
+        font-size: 3.8rem;
+    }
+
+    .portals-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.85rem;
+    }
+
+    .portal-card {
+        padding: 1.15rem;
+    }
+
+    .gold-card-wrapper {
+        padding: 1.15rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .som-header,
+    .som-body {
+        gap: 0.9rem;
+    }
+
+    .som-header {
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.1rem;
+    }
+
+    .som-body {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        text-align: center;
+    }
+
+    .som-avatar-wrap {
+        gap: 0.45rem;
+    }
+
+    .som-avatar-frame {
+        width: 104px;
+        height: 104px;
+    }
+
+    .som-avatar {
+        font-size: 4rem;
+    }
+
+    .som-details {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .som-title-tag {
+        margin-bottom: 0.8rem;
+    }
+
+    .som-metrics-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .som-name {
+        font-size: clamp(1.4rem, 6vw, 1.75rem);
+        overflow-wrap: anywhere;
+    }
+
+    .som-metric {
+        min-width: 0;
+        align-items: center;
+        padding: 0.5rem 0.35rem;
+    }
+
+    .som-metric-val {
+        font-size: 1rem;
+    }
+
+    .som-metric-lbl {
+        font-size: 0.68rem;
+        text-align: center;
+    }
+
+    .som-badges-strip,
+    .som-action-buttons {
+        justify-content: center;
+    }
+
+    .som-action-buttons {
+        flex-direction: column;
+    }
+
+    .som-action-buttons .btn {
+        width: 100%;
+        min-height: 46px;
+        flex: 0 0 auto;
+    }
+
+    .som-heading-group {
+        flex: 1 1 100%;
+        align-items: center;
+    }
+
+    .som-home-body {
+        grid-template-columns: minmax(0, 1fr);
+        justify-items: center;
+        text-align: center;
+    }
+
+    .som-home-avatar {
+        width: 88px;
+        height: 88px;
+    }
+
+    .som-home-avatar .som-avatar {
+        font-size: 3rem;
+    }
+
+    .som-home-details {
+        width: 100%;
+    }
+
+    .som-home-facts {
+        justify-content: center;
+    }
+
+    .som-home-action,
+    .som-home-action .btn {
+        width: 100%;
+    }
+
+    .som-home-action .btn {
+        white-space: normal;
+    }
+
+    .teacher-studio-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .teacher-account-settings-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .teacher-content-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .teacher-content-actions {
+        width: 100%;
+    }
+
+    .teacher-content-actions .btn {
+        flex: 1;
+    }
+
+    .quiz-box-card {
+        padding: 1.1rem;
+        border-radius: 16px;
+    }
+
+    .quiz-question-box h3 {
+        font-size: 1.15rem;
+    }
+
+    .quiz-option-btn {
+        gap: 0.65rem;
+        padding: 0.85rem;
+        font-size: 0.98rem;
+        line-height: 1.6;
+    }
+
+    .game-tabs-nav {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 0.15rem 0 0.65rem;
+        margin-bottom: 1rem;
+        overscroll-behavior-inline: contain;
+    }
+
+    .game-tab-btn {
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 0.55rem 1rem;
+        font-size: 0.88rem;
+    }
+
+    .activity-instructions-box,
+    .sub-review-card {
+        padding: 1rem;
+    }
+
+    .teacher-tip-bubble {
+        gap: 0.65rem;
+        padding: 0.9rem;
+    }
+
+    .leaderboard-table-card {
+        max-width: 100%;
+    }
+
+    .leaderboard-table-card table {
+        min-width: 560px;
+    }
+
+    .modal-backdrop {
+        align-items: flex-end;
+        padding: 0.5rem;
+    }
+
+    .modal-dialog {
+        max-height: 92dvh;
+        padding: 1.25rem 1rem;
+        border-radius: 18px 18px 12px 12px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .form-control,
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    .btn,
+    .btn-icon,
+    .game-tab-btn,
+    .leaderboard-filter-btn,
+    .avatar-option-btn {
+        touch-action: manipulation;
+    }
+}
+
+@media (max-width: 480px) {
+    .intro-splash-screen {
+        justify-content: flex-start;
+        padding: max(0.8rem, env(safe-area-inset-top)) 0.75rem max(1rem, env(safe-area-inset-bottom));
+    }
+
+    .intro-cards-showcase {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        width: min(100%, 300px);
+        margin: 0 auto 1rem;
+    }
+
+    .intro-img-card {
+        width: 100%;
+        height: 132px;
+        border-width: 2px;
+        animation: none;
+        transform: none !important;
+    }
+
+    .intro-img-card img {
+        height: 82px;
+        flex-basis: 82px;
+    }
+
+    .intro-image-caption {
+        min-height: 0;
+        padding: 0.25rem;
+        font-size: 0.68rem;
+        line-height: 1.3;
+    }
+
+    .intro-school-vision {
+        font-size: 0.58rem;
+    }
+
+    .intro-title-group {
+        opacity: 1;
+        animation: none;
+    }
+
+    .intro-eyebrow-pill {
+        max-width: 100%;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.72rem;
+    }
+
+    .intro-grand-title {
+        font-size: clamp(1.65rem, 8vw, 2.1rem);
+    }
+
+    .intro-subheading {
+        font-size: 0.9rem;
+    }
+
+    .intro-teacher-credit {
+        font-size: 0.88rem;
+        margin-bottom: 0.9rem;
+    }
+
+    .intro-enter-btn {
+        width: 100%;
+        font-size: 0.96rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .intro-skip-bottom-btn {
+        min-height: 44px;
+        margin-top: 0.65rem;
+    }
 }
